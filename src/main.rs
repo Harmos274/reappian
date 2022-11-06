@@ -10,6 +10,6 @@ fn main() {
     let test_file = read_to_string("./test_files/HelloWorld.appian");
 
     if let Ok(str) = test_file {
-        parser(Lexer::from(str.as_str()).collect())
+        println!("{:?}", parser(Lexer::from(str.as_str()).collect()))
     }
 }
