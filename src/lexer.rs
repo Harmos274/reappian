@@ -31,7 +31,7 @@ where
     fn next(&mut self) -> Option<Self::Item> {
         match self.1 {
             LexingState::CollectedStringLiteral => self.collected_string_literal(),
-            LexingState::CollectingStringLiteral => self.collectin_string_literal(),
+            LexingState::CollectingStringLiteral => self.collecting_string_literal(),
             LexingState::Basic => self.basic(),
         }
     }
@@ -71,7 +71,7 @@ where
         })
     }
 
-    fn collectin_string_literal(&mut self) -> Option<Token> {
+    fn collecting_string_literal(&mut self) -> Option<Token> {
         self.1 = LexingState::CollectedStringLiteral;
         Some(Token::Word(self.collect_string_litteral()))
     }
