@@ -35,7 +35,7 @@ fn parse_array_or_object(tokens: &[Token]) -> Option<Vec<AST>> {
 fn parse(tokens: &[Token]) -> Option<AST> {
     match tokens {
         [] => None,
-        [Token::Word(word)] if word.chars().find(|&c| c == '.').is_none() => {
+        [Token::Word(word)] if !word.chars().any(|c| c == '.') => {
             Some(AST::Numeric(Number::Integer(word.parse().ok()?)))
         }
         [Token::Word(word)] => Some(AST::Numeric(Number::Decimal(word.parse().ok()?))),
@@ -78,7 +78,7 @@ mod tests {
             parser(vec![
                 Token::StringLiteralSeparator,
                 Token::Word("Toto".to_string()),
-                Token::StringLiteralSeparator
+                Token::StringLiteralSeparator,
             ]),
             Some(expected_ast)
         )

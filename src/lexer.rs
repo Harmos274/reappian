@@ -125,16 +125,16 @@ where
     }
 
     fn is_syntaxic_token(c: char) -> bool {
-        match c {
+        matches!(
+            c,
             Self::NAME_SEPARATOR
-            | Self::OPEN_ARGUMENTS
-            | Self::CLOSE_ARGUMENTS
-            | Self::OPEN_OBJECT
-            | Self::CLOSE_OBJECT
-            | Self::LINE_SEPARATOR
-            | Self::NAMESPACE_SEPARATOR => true,
-            _ => false,
-        }
+                | Self::OPEN_ARGUMENTS
+                | Self::CLOSE_ARGUMENTS
+                | Self::OPEN_OBJECT
+                | Self::CLOSE_OBJECT
+                | Self::LINE_SEPARATOR
+                | Self::NAMESPACE_SEPARATOR
+        )
     }
 }
 
