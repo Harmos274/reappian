@@ -152,4 +152,27 @@ mod tests {
             Some(expected_ast)
         )
     }
+
+    #[test]
+    fn should_parse_list_with_2_string_litteral_as_list_of_2_string_litteral() {
+        let expected_ast = AST::List(vec![
+            AST::String("toto".to_string()),
+            AST::String("tutu".to_string()),
+        ]);
+
+        assert_eq!(
+            parser(&[
+                Token::OpenObject,
+                Token::StringLiteralSeparator,
+                Token::Word("toto".to_string()),
+                Token::StringLiteralSeparator,
+                Token::LineSeparator,
+                Token::StringLiteralSeparator,
+                Token::Word("tutu".to_string()),
+                Token::StringLiteralSeparator,
+                Token::CloseObject
+            ]),
+            Some(expected_ast)
+        )
+    }
 }
