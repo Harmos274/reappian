@@ -6,7 +6,7 @@ pub enum AST {
     Empty,
     Numeric(Number),
     String(String),
-    Array(Vec<AST>),
+    List(Vec<AST>),
 }
 
 #[derive(Debug)]
@@ -22,6 +22,7 @@ pub fn parser(tokens: &[Token]) -> Option<AST> {
 
     match tokens {
         [] => Some(Empty),
+        [OpenObject, CloseObject, ..] => Some(AST::List(vec![])),
         [OpenObject, tail @ ..] => {
             if let [inside, outside] = tail
                 .splitn(2, |token| matches!(token, CloseObject))
@@ -29,8 +30,9 @@ pub fn parser(tokens: &[Token]) -> Option<AST> {
                 .as_slice()
             {
                 // parse outside
-                Some(Array(parse_array_or_object(inside)?))
+                Some(List(parse_array_or_object(inside)?))
             } else {
+                // Unmatched curly brackets
                 None
             }
         }
@@ -100,11 +102,25 @@ mod tests {
     }
 
     #[test]
-    fn should_parse_list_objects_as_lists() {
-        let expected_ast = AST::Array(vec![]);
+    fn should_parse_empty_list_objects_as_list() {
+        let expected_ast = AST::List(vec![]);
 
         assert_eq!(
             parser(&[Token::OpenObject, Token::CloseObject]),
+            Some(expected_ast)
+        )
+    }
+
+    #[test]
+    fn should_parse_list_with_string_litteral_as_list_of_string() {
+        let expected_ast = AST::List(vec![AST::Numeric(Number::Integer(22))]);
+
+        assert_eq!(
+            parser(&[
+                Token::OpenObject,
+                Token::Word("22".to_string()),
+                Token::CloseObject
+            ]),
             Some(expected_ast)
         )
     }
