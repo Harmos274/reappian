@@ -10,6 +10,9 @@ fn main() {
     let test_file = read_to_string("./test_files/HelloWorld.appian");
 
     if let Ok(str) = test_file {
-        println!("{:?}", parser(Lexer::from(str.as_str()).collect()))
+        println!(
+            "{:?}",
+            parser(Lexer::from(str.as_str()).collect::<Vec<_>>().as_slice())
+        )
     }
 }

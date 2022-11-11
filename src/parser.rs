@@ -3,6 +3,7 @@ use crate::lexer::Token;
 #[derive(Debug)]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum AST {
+    Empty,
     Numeric(Number),
     String(String),
     Array(Vec<AST>),
@@ -15,10 +16,24 @@ pub enum Number {
     Decimal(f64),
 }
 
-pub fn parser(tokens: Vec<Token>) -> Option<AST> {
-    match tokens.as_slice() {
-        [] => None,
-        [Token::OpenObject, tail @ ..] => Some(AST::Array(parse_array_or_object(tail)?)),
+pub fn parser(tokens: &[Token]) -> Option<AST> {
+    use Token::*;
+    use AST::*;
+
+    match tokens {
+        [] => Some(Empty),
+        [OpenObject, tail @ ..] => {
+            if let [inside, outside] = tail
+                .splitn(2, |token| matches!(token, CloseObject))
+                .collect::<Vec<&[Token]>>()
+                .as_slice()
+            {
+                // parse outside
+                Some(Array(parse_array_or_object(inside)?))
+            } else {
+                None
+            }
+        }
         _ => None,
     }
 }
