@@ -34,7 +34,7 @@ pub fn parser(tokens: &[Token]) -> Option<AST> {
                 None
             }
         }
-        _ => None,
+        tokens => parse(tokens),
     }
 }
 
@@ -70,7 +70,7 @@ mod tests {
         let expected_number = Number::Integer(12);
 
         assert_eq!(
-            parser(vec![Token::Word("12".to_string())]),
+            parser(&[Token::Word("12".to_string())]),
             Some(AST::Numeric(expected_number))
         )
     }
@@ -80,7 +80,7 @@ mod tests {
         let expected_number = Number::Decimal(12.24);
 
         assert_eq!(
-            parser(vec![Token::Word("12.24".to_string())]),
+            parser(&[Token::Word("12.24".to_string())]),
             Some(AST::Numeric(expected_number))
         )
     }
@@ -90,7 +90,7 @@ mod tests {
         let expected_ast = AST::String("Toto".to_string());
 
         assert_eq!(
-            parser(vec![
+            parser(&[
                 Token::StringLiteralSeparator,
                 Token::Word("Toto".to_string()),
                 Token::StringLiteralSeparator,
@@ -104,7 +104,7 @@ mod tests {
         let expected_ast = AST::Array(vec![]);
 
         assert_eq!(
-            parser(vec![Token::OpenObject, Token::CloseObject]),
+            parser(&[Token::OpenObject, Token::CloseObject]),
             Some(expected_ast)
         )
     }
