@@ -41,12 +41,10 @@ pub fn parser(tokens: &[Token]) -> Option<AST> {
 }
 
 fn parse_array_or_object(tokens: &[Token]) -> Option<Vec<AST>> {
-    match tokens {
-        [_token, Token::LineSeparator, _tail @ ..] => todo!(),
-        [_token, Token::CloseObject, _tail @ ..] => todo!(),
-        [Token::CloseObject, _tail @ ..] => todo!(),
-        _ => todo!(),
-    }
+    tokens
+        .split(|token| matches!(token, Token::LineSeparator))
+        .map(parser)
+        .collect()
 }
 
 fn parse(tokens: &[Token]) -> Option<AST> {
@@ -112,13 +110,43 @@ mod tests {
     }
 
     #[test]
-    fn should_parse_list_with_string_litteral_as_list_of_string() {
+    fn should_parse_list_with_integer_as_list_of_integer() {
         let expected_ast = AST::List(vec![AST::Numeric(Number::Integer(22))]);
 
         assert_eq!(
             parser(&[
                 Token::OpenObject,
                 Token::Word("22".to_string()),
+                Token::CloseObject
+            ]),
+            Some(expected_ast)
+        )
+    }
+
+    #[test]
+    fn should_parse_list_with_decimal_as_list_of_decimal() {
+        let expected_ast = AST::List(vec![AST::Numeric(Number::Decimal(22.2))]);
+
+        assert_eq!(
+            parser(&[
+                Token::OpenObject,
+                Token::Word("22.2".to_string()),
+                Token::CloseObject
+            ]),
+            Some(expected_ast)
+        )
+    }
+
+    #[test]
+    fn should_parse_list_with_string_litteral_as_list_of_string_litteral() {
+        let expected_ast = AST::List(vec![AST::String("toto".to_string())]);
+
+        assert_eq!(
+            parser(&[
+                Token::OpenObject,
+                Token::StringLiteralSeparator,
+                Token::Word("toto".to_string()),
+                Token::StringLiteralSeparator,
                 Token::CloseObject
             ]),
             Some(expected_ast)
