@@ -1,7 +1,7 @@
 use std::{iter::Peekable, str::Chars};
 
 #[derive(Debug)]
-#[cfg_attr(test, derive(PartialEq))]
+#[cfg_attr(test, derive(PartialEq, Eq))]
 pub enum Token {
     Word(String),
     StringLiteralSeparator,
@@ -145,7 +145,7 @@ impl<'a> From<&'a str> for Lexer<Chars<'a>> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
     fn lexer(str: &str) -> Vec<Token> {
