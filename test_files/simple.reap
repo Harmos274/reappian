@@ -1,0 +1,13 @@
+{! in x: int, in y: int, out z: int -!}
+{
+  std!localVariables(
+    local!toto = x,
+    local!tutu = y,
+    std::mem!saveIn(z, std::func!reduce( 
+      std!list(x, y),
+      {!in acc: int, in elem: int, out _: int -!} {
+        std::math!add(acc, elem)
+      },
+    ))
+  )
+}
