@@ -1,12 +1,28 @@
 {! in x: int, in y: int, out z: int -!}
 {
   std!localVariables(
-    local!toto = x,
+    local!IntArray = std::lang!makeType(
+      self!data = std!array(int),
+      self!length = std!derived(self!data.length), // Dynamic property.
+
+      self!builder = {! in data: std!array(int), out self -!} {
+        std::mem!saveIn(self!data, data)
+      }
+      
+      self!methods = {
+        index = {! in self, in x: int, out _: int -!} { self.data[x] } // Callable after type instantiation.
+        static = {! in x: int, out _: int -!} { x },  // Callable with local!IntArray.static(x).
+      }
+    ),
+    local!func = std::func, // Use local variable as scope.
+    local!add = std::math!add, // Use local variable as function.
+    local!toto = x, // Use local variable to store input. Copy by default.
     local!tutu = y,
-    std::mem!saveIn(z, std::func!reduce( 
+
+    std::mem!saveIn(z, local!func!reduce( 
       std!list(x, y),
-      {!in acc: int, in elem: int, out _: int -!} {
-        std::math!add(acc, elem)
+      {! in acc: int, in elem: int, out _: int -!} {
+        local!add(acc, elem)
       },
     ))
   )

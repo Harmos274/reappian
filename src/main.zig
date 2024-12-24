@@ -45,7 +45,7 @@ pub fn main() !void {
         .kind = token.Kind.OpenParen,
     };
 
-    std.debug.print("{s}\n", .{toto.kind});
+    std.debug.print("{s}\n", .{@tagName(toto.kind)});
 
     // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
