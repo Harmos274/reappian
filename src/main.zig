@@ -18,7 +18,9 @@ const version_flag = std.fmt.comptimePrint("Reap compiler version {s}\n", .{conf
 pub fn main() !void {
     var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = general_purpose_allocator.deinit();
+
     const allocator = general_purpose_allocator.allocator();
+
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
 
@@ -28,15 +30,32 @@ pub fn main() !void {
         return;
     }
 
-    for (args, 0..) |arg, i| {
-        if (std.mem.eql(u8, arg, "+version")) {
+    var i: u8 = 0;
+
+    while (i < args.len) {
+        if (std.mem.eql(u8, args[i], "+version")) {
             std.debug.print(version_flag, .{});
             return;
-        } else if (std.mem.eql(u8, arg, "+help")) {
+        } else if (std.mem.eql(u8, args[i], "+help")) {
             std.debug.print(usage_flag, .{});
             return;
+        } else if (std.mem.eql(u8, args[i], "+build")) {
+            i += 1;
+            while (i < args.len) {
+                var file = try std.fs.cwd().openFile(args[i], .{});
+                defer file.close();
+
+                var buf_reader = std.io.bufferedReader(file.reader());
+                var in_stream = buf_reader.reader();
+
+                var buf: [1024]u8 = undefined;
+                while (try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+                    std.debug.print("{s}\n", .{line});
+                }
+                i += 1;
+            }
         }
-        _ = i;
+        i += 1;
         //std.debug.print("{}: {s}\n", .{ i, arg });
     }
 
